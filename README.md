@@ -20,7 +20,8 @@
 └── .github/
     └── workflows/
         ├── digest.yml           # 平日 23:00 JST に digest.sh を実行
-        └── reminder.yml         # 毎年 4/14 09:00 JST に PAT 更新リマインダを Slack 投稿
+        ├── reminder.yml         # 毎年 4/14 09:00 JST に PAT 更新リマインダを Slack 投稿
+        └── keepalive.yml        # 毎月 1 日 09:00 JST に空コミットを積み、ワークフローの自動停止を防ぐ
 ```
 
 ## 必要なもの
@@ -133,6 +134,17 @@ DRY_RUN=false ./bin/digest.sh
 1. https://github.com/settings/tokens で対象 classic PAT を更新（または新規発行）
 2. https://github.com/azimicat/github-daily-digest/settings/secrets/actions で `DIGEST_GITHUB_TOKEN` を上書き
 3. 翌平日 23:00 JST の自動実行が成功するか確認
+
+### ワークフローの自動停止対策
+
+GitHub はリポジトリに 60 日間コミットなどのアクティビティがないと、schedule 起動のワークフローを `disabled_inactivity` 状態にして止めます。
+`.github/workflows/keepalive.yml` が毎月 **1 日 09:00 JST** に main へ空コミットを push し、`digest.yml` が止まらないようにしています。
+
+止まってしまった場合は、以下で再開できます。
+
+```sh
+gh workflow enable "GitHub Daily Digest"
+```
 
 ## 設定リファレンス（環境変数）
 
